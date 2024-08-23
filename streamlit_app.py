@@ -4,6 +4,9 @@ import pandas as pd
 import streamlit as st
 
 
+st.set_page_config(layout="wide")
+
+
 class Analysis:
     def __init__(self) -> None:
 
@@ -24,18 +27,32 @@ class Analysis:
             data_str = self.file.getvalue()
             data_json = json.loads(data_str)
 
-            df = pd.DataFrame(data_json["data"])
+            sensor_data_df = pd.DataFrame(data_json["sensor_data"]["data"])
 
-            df_T = df.T
+            sensor_data_df_T = sensor_data_df.T
 
-            df_T["index"] = list(range(len(df_T)))
+            sensor_data_df_T["index"] = list(range(len(sensor_data_df_T)))
 
             # st.write(df_T)
 
             container = st.container(height=None, border=True)
             with container:
+                col1, col2, col3 = st.columns(3)
 
-                st.line_chart(df_T, x="index")
+                with col1:
+                    st.metric(label="Battery", value=data_json["battery_per"])
+
+                with col2:
+                    st.metric(label="rssi", value=data_json["rssi"])
+
+                with col3:
+                    st.metric(label="Device",
+                              value=data_json["sensor_data"]["mac_address"])
+
+            container = st.container(height=None, border=True)
+            with container:
+
+                st.line_chart(sensor_data_df_T, x="index")
 
         return None
 
