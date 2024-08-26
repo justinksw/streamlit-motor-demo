@@ -31,9 +31,7 @@ class Analysis:
                 int(int(self.file.name.split(".")[0])/1000)
             )
             # .replace(tzinfo=pytz.utc)
-
-            tz = pytz.timezone('Asia/Hong_Kong')
-            ts_hk = ts.astimezone(tz)
+            ts_hk = ts.astimezone(pytz.timezone('Asia/Hong_Kong'))
 
             st.write(ts_hk)
 
