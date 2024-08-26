@@ -28,9 +28,13 @@ class Analysis:
         if self.file is not None:
 
             ts = datetime.fromtimestamp(
-                int(int(self.file.name.split(".")[0])/1000)).replace(tzinfo=pytz.utc)
+                int(int(self.file.name.split(".")[0])/1000)
+            )
+            # .replace(tzinfo=pytz.utc)
+
             tz = pytz.timezone('Asia/Hong_Kong')
             ts_hk = ts.astimezone(tz)
+
             st.write(ts_hk)
 
             data_str = self.file.getvalue()
