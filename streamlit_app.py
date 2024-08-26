@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 import pandas as pd
 import streamlit as st
@@ -18,11 +19,15 @@ class Analysis:
         with container:
             file = st.file_uploader(
                 label="Upload a JSON File", label_visibility="visible")
+
         return file
 
     def display(self):
 
         if self.file is not None:
+
+            ts = int(int(self.file.name.split(".")[0]) / 1000)
+            st.write(datetime.fromtimestamp(ts))
 
             data_str = self.file.getvalue()
             data_json = json.loads(data_str)
