@@ -148,7 +148,7 @@ class Index:
 
         _x = list(range(len(dff)))
 
-        st.write(dff)
+        # st.write(dff)
 
         fig, ax = plt.subplots()  # figsize=(6, 3)
         ax.grid()
