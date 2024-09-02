@@ -1,52 +1,10 @@
-import json
-import pytz
-from copy import deepcopy
-from datetime import datetime
-
 import pandas as pd
 import streamlit as st
-import matplotlib.pyplot as plt
 
+from src.read_json import Datafile
+from src.plot import Plot
 
 st.set_page_config(layout="centered")
-
-
-class Datafile:
-    def __init__(self, file) -> None:
-        # file object: uploaded from streamlit file upload function
-        data_str = file.getvalue()
-        self.data_json = json.loads(data_str)
-
-        self.ts = datetime.fromtimestamp(
-            int(int(file.name.split(".")[0])/1000)
-        )
-        # .replace(tzinfo=pytz.utc)
-
-    def get_timestamp_unix(self):
-        return self.ts
-
-    def get_timestamp_utc_hk(self):
-        ts_hk = self.ts.astimezone(pytz.timezone('Asia/Hong_Kong'))
-        return ts_hk
-
-    def get_device_id(self):
-        return self.data_json["sensor_data"]["mac_address"]
-
-    def get_battery_value(self):
-        return self.data_json["battery_per"]
-
-    def get_connection_value(self):
-        return self.data_json["rssi"]
-
-    def get_data_df(self):
-        # json -> df
-        data_df = pd.DataFrame(self.data_json["sensor_data"]["data"])
-        # transpose
-        data_df_T = data_df.T
-        # add an index column
-        data_df_T["index"] = list(range(len(data_df_T)))
-
-        return data_df_T
 
 
 class Index:
@@ -69,37 +27,28 @@ class Index:
 
     def display_single_file(self, file):
         # == Load file == #
-
         datafile = Datafile(file)
 
         # == Row 1 == #
-
         st.write(datafile.get_timestamp_utc_hk())
 
         # == Row 2 == #
-
         container = st.container(height=None, border=True)
         with container:
             col1, col2, col3 = st.columns([0.65, 0.15, 0.2])
 
             with col1:
-                st.metric(
-                    label="Device", value=datafile.get_device_id())
-
+                st.metric(label="Device", value=datafile.get_device_id())
             with col2:
-                st.metric(
-                    label="rssi", value=datafile.get_connection_value())
-
+                st.metric(label="rssi", value=datafile.get_connection_value())
             with col3:
-
-                st.metric(
-                    label="Battery", value=datafile.get_battery_value())
+                st.metric(label="Battery", value=datafile.get_battery_value())
 
         # == Row 3 == #
-
         data_df = datafile.get_data_df()
 
         container = st.container(height=None, border=True)
+
         with container:
             st.line_chart(data_df, x="index")
 
@@ -148,17 +97,19 @@ class Index:
 
         _x = list(range(len(dff)))
 
-        # st.write(dff)
+        plot = Plot()
 
-        fig, ax = plt.subplots()  # figsize=(6, 3)
-        ax.grid()
-        ax.plot(_x, dff["connection"], marker="o", markersize=None)
-        ax.set_xticks(ticks=_x, labels=dff["time"])
-        ax.set_ylabel("Rssi value")
-        ax.set_xlabel("Time")
-        ax.set_title(f"Device: {device}")
+        fig = plot.line_fig(
+            x=_x,
+            y=dff["connection"],
+            title=f"Device: {device}",
+            xlabel="Time",
+            ylabel="Rssi value",
+            xticks_val=_x,
+            xticks_label=dff["time"],
+        )
 
-        st.pyplot(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
         return None
 
