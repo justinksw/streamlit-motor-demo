@@ -79,7 +79,7 @@ class Index:
 
         container = st.container(height=None, border=True)
         with container:
-            col1, col2, col3 = st.columns([0.5, 0.25, 0.25])
+            col1, col2, col3 = st.columns([0.6, 0.2, 0.2])
 
             with col1:
                 st.metric(
