@@ -122,7 +122,8 @@ class Index:
         df = pd.DataFrame(data)
         df = df.sort_values(by=["ts"])
 
-        df['time'] = pd.to_datetime(df['ts']).dt.time
+        df['ts_hk'] = pd.to_datetime(df['ts']).dt.tz_localize('Asia/Hong_Kong')
+        df['time'] = pd.to_datetime(df['ts_hk']).dt.time
 
         # prevent upload same files multiple times
         df = df.drop_duplicates(subset=["filename"], keep="last")
@@ -147,7 +148,7 @@ class Index:
         dff = df[df["devices"] == device]
         dff["index"] = list(range(len(dff)))
 
-        # st.write(dff)
+        st.write(dff)
 
         fig, ax = plt.subplots()  # figsize=(6, 3)
         ax.grid()
