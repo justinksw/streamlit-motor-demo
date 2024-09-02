@@ -23,7 +23,11 @@ class Plot:
         _xticks_val = kwargs.get('xticks_val')
         _xticks_label = kwargs.get('xticks_label')
 
-        xticks_dict = dict()
+        xticks_dict = dict(
+            tickfont=dict(
+                size=_fontsize,
+            )
+        )
         if _xticks_val:
             xticks_dict = dict(
                 showgrid=True,
