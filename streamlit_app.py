@@ -1,5 +1,6 @@
 import json
 import pytz
+from copy import deepcopy
 from datetime import datetime
 
 import pandas as pd
@@ -116,14 +117,12 @@ class Index:
             datafile = Datafile(f)
             data["filename"].append(f.name.split(".")[0])
             data["devices"].append(datafile.get_device_id())
-            # data["ts"].append(datafile.get_timestamp_unix())  # get_timestamp_utc_hk
             data["ts"].append(datafile.get_timestamp_utc_hk())
             data["connection"].append(datafile.get_connection_value())
 
         df = pd.DataFrame(data)
         df = df.sort_values(by=["ts"])
 
-        # df['ts_hk'] = pd.to_datetime(df['ts']).dt.tz_localize('Asia/Hong_Kong')
         df['time'] = pd.to_datetime(df['ts']).dt.time
 
         # prevent upload same files multiple times
@@ -139,7 +138,6 @@ class Index:
         df = self.get_multiple_file_df()
 
         devices = df["devices"].unique()
-        print(devices)
 
         device = st.selectbox(
             label="There may be multiple devices",
@@ -147,14 +145,15 @@ class Index:
         )
 
         dff = df[df["devices"] == device]
-        dff["index"] = list(range(len(dff)))
+
+        _x = list(range(len(dff)))
 
         st.write(dff)
 
         fig, ax = plt.subplots()  # figsize=(6, 3)
         ax.grid()
-        ax.plot(dff["index"], dff["connection"], marker="o", markersize=None)
-        ax.set_xticks(ticks=dff["index"], labels=dff["time"])
+        ax.plot(_x, dff["connection"], marker="o", markersize=None)
+        ax.set_xticks(ticks=_x, labels=dff["time"])
         ax.set_ylabel("Rssi value")
         ax.set_xlabel("Time")
         ax.set_title(f"Device: {device}")
