@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -50,7 +51,29 @@ class Index:
         container = st.container(height=None, border=True)
 
         with container:
-            st.line_chart(data_df, x="index")
+
+            _x = list(range(len(data_df)))
+
+            y = [
+                data_df["x"],
+                data_df["y"],
+                data_df["z"],
+            ]
+
+            labels = ["X", "Y", "Z"]
+
+            plot = Plot()
+
+            fig = plot.multiple_line_fig(
+                x=_x,
+                y=y,
+                label=labels,
+                title=f"Triaxial data",
+                xlabel="Sample point number",
+                ylabel="Acceleration [g]",
+            )
+
+            st.plotly_chart(fig)
 
         return None
 
