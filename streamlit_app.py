@@ -116,14 +116,15 @@ class Index:
             datafile = Datafile(f)
             data["filename"].append(f.name.split(".")[0])
             data["devices"].append(datafile.get_device_id())
-            data["ts"].append(datafile.get_timestamp_unix())
+            # data["ts"].append(datafile.get_timestamp_unix())  # get_timestamp_utc_hk
+            data["ts"].append(datafile.get_timestamp_utc_hk())
             data["connection"].append(datafile.get_connection_value())
 
         df = pd.DataFrame(data)
         df = df.sort_values(by=["ts"])
 
-        df['ts_hk'] = pd.to_datetime(df['ts']).dt.tz_localize('Asia/Hong_Kong')
-        df['time'] = pd.to_datetime(df['ts_hk']).dt.time
+        # df['ts_hk'] = pd.to_datetime(df['ts']).dt.tz_localize('Asia/Hong_Kong')
+        df['time'] = pd.to_datetime(df['ts']).dt.time
 
         # prevent upload same files multiple times
         df = df.drop_duplicates(subset=["filename"], keep="last")
