@@ -64,7 +64,7 @@ class Index:
 
             plot = Plot()
 
-            fig = plot.multiple_line_fig(
+            fig = plot.line_fig(
                 x=_x,
                 y=y,
                 label=labels,
@@ -130,6 +130,7 @@ class Index:
             ylabel="Rssi value",
             xticks_val=_x,
             xticks_label=dff["time"],
+            mode="lines+markers"
         )
 
         st.plotly_chart(fig)
