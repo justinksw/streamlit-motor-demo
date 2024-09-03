@@ -3,12 +3,13 @@ import pandas as pd
 import streamlit as st
 
 from src.read_json import Datafile
-from src.plot import Plot
+
+from kswutils_plotly.plotly_graph import PlotlyGraph
 
 st.set_page_config(layout="centered")
 
 
-class Index:
+class Analysis:
     def __init__(self) -> None:
         st.title("Upload File(s) to Start")
         st.write("")
@@ -62,9 +63,7 @@ class Index:
 
             labels = ["X", "Y", "Z"]
 
-            plot = Plot()
-
-            fig = plot.line_fig(
+            fig = PlotlyGraph.line(
                 x=_x,
                 y=y,
                 label=labels,
@@ -120,9 +119,7 @@ class Index:
 
         _x = list(range(len(dff)))
 
-        plot = Plot()
-
-        fig = plot.line_fig(
+        fig = PlotlyGraph.line(
             x=_x,
             y=dff["connection"],
             title=f"Device: {device}",
@@ -150,5 +147,5 @@ class Index:
         return None
 
 
-index = Index()
+index = Analysis()
 index.display()
