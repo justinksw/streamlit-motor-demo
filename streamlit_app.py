@@ -23,7 +23,7 @@ class Analysis:
                 label="Upload **one or multiple** JSON File(s)",
                 type="json",
                 accept_multiple_files=True,
-                label_visibility="visible"
+                label_visibility="visible",
             )
         return files
 
@@ -53,7 +53,7 @@ class Analysis:
 
         with container:
 
-            _x = list(range(len(data_df)))
+            _x = np.linspace(0, len(data_df), len(data_df))
 
             y = [
                 data_df["x"],
@@ -63,7 +63,9 @@ class Analysis:
 
             labels = ["X", "Y", "Z"]
 
-            fig = PlotlyGraph.line(
+            graph = PlotlyGraph()
+
+            graph.add_line(
                 x=_x,
                 y=y,
                 label=labels,
@@ -72,7 +74,7 @@ class Analysis:
                 ylabel="Acceleration [g]",
             )
 
-            st.plotly_chart(fig)
+            st.plotly_chart(graph.fig)
 
         return None
 
@@ -94,7 +96,7 @@ class Analysis:
         df = pd.DataFrame(data)
         df = df.sort_values(by=["ts"])
 
-        df['time'] = pd.to_datetime(df['ts']).dt.time
+        df["time"] = pd.to_datetime(df["ts"]).dt.time
 
         # prevent upload same files multiple times
         df = df.drop_duplicates(subset=["filename"], keep="last")
@@ -110,27 +112,26 @@ class Analysis:
 
         devices = df["devices"].unique()
 
-        device = st.selectbox(
-            label="There may be multiple devices",
-            options=devices
-        )
+        device = st.selectbox(label="There may be multiple devices", options=devices)
 
         dff = df[df["devices"] == device]
 
-        _x = list(range(len(dff)))
+        _x = np.linspace(0, len(dff), len(dff))
 
-        fig = PlotlyGraph.line(
+        graph = PlotlyGraph()
+
+        graph.add_line(
             x=_x,
             y=dff["connection"],
             title=f"Device: {device}",
             xlabel="Time",
             ylabel="Rssi value",
-            xticks_val=_x,
+            xticks_val=_x.tolist(),
             xticks_label=dff["time"],
-            mode="lines+markers"
+            mode="lines+markers",
         )
 
-        st.plotly_chart(fig)
+        st.plotly_chart(graph.fig)
 
         return None
 
