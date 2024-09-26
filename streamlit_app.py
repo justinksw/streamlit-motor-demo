@@ -53,7 +53,7 @@ class Analysis:
 
         with container:
 
-            _x = np.linspace(0, len(data_df), len(data_df))
+            _x = [np.linspace(0, len(data_df), len(data_df))] * 3
 
             y = [
                 data_df["x"],
