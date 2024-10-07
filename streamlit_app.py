@@ -84,6 +84,7 @@ class Analysis:
             "devices": [],
             "ts": [],
             "connection": [],
+            "data": [],
         }
 
         for f in self.files:
@@ -92,6 +93,7 @@ class Analysis:
             data["devices"].append(datafile.get_device_id())
             data["ts"].append(datafile.get_timestamp_utc_hk())
             data["connection"].append(datafile.get_connection_value())
+            data["data"].append(datafile.get_data_df())
 
         df = pd.DataFrame(data)
         df = df.sort_values(by=["ts"])
@@ -116,6 +118,8 @@ class Analysis:
 
         dff = df[df["devices"] == device]
 
+        st.write(f"Number of files: {len(dff)}")
+
         _x = np.linspace(0, len(dff), len(dff))
 
         graph = PlotlyGraph()
@@ -131,7 +135,40 @@ class Analysis:
             mode="lines+markers",
         )
 
-        st.plotly_chart(graph.fig)
+        selection = st.plotly_chart(graph.fig, on_select="rerun")
+
+        if selection["selection"]["points"]:
+
+            name = dff.iloc[selection["selection"]["points"][0]["point_number"]][
+                "filename"
+            ]
+
+            data_df = dff.iloc[selection["selection"]["points"][0]["point_number"]][
+                "data"
+            ]
+
+            _x = [np.linspace(0, len(data_df), len(data_df))] * 3
+
+            y = [
+                data_df["x"],
+                data_df["y"],
+                data_df["z"],
+            ]
+
+            labels = ["X", "Y", "Z"]
+
+            graph = PlotlyGraph()
+
+            graph.add_line(
+                x=_x,
+                y=y,
+                label=labels,
+                title=f"Triaxial data - {name}",
+                xlabel="Sample point number",
+                ylabel="Acceleration [g]",
+            )
+
+            st.plotly_chart(graph.fig)
 
         return None
 
